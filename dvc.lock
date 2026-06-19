@@ -1,0 +1,128 @@
+schema: '2.0'
+stages:
+  validate:
+    cmd: python -m ml.validate
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 55f5c33e4bfebea290bb79c0248f2188.dir
+      size: 803191
+      nfiles: 4
+    - path: ml/clean.py
+      hash: md5
+      md5: e6b1698e74c819279f63c17885937c4b
+      size: 2655
+    - path: ml/common.py
+      hash: md5
+      md5: a3faa2d3b6bf98ab5d82a661a62c8a30
+      size: 4884
+    - path: ml/expectations.py
+      hash: md5
+      md5: 6fae0bb187ca768231ef61a68bc902fc
+      size: 6287
+    - path: ml/validate.py
+      hash: md5
+      md5: e69fbe94479cfdc57d94d57a5d7afc32
+      size: 2071
+    outs:
+    - path: validations
+      hash: md5
+      md5: 08bce3e86b324dfb05c0c829a8e58073.dir
+      size: 9726
+      nfiles: 2
+  anonymize:
+    cmd: python -m ml.anonymize
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 55f5c33e4bfebea290bb79c0248f2188.dir
+      size: 803191
+      nfiles: 4
+    - path: ml/anonymize.py
+      hash: md5
+      md5: 0b1ffbef5abe7b9ccc662dd8c893cafd
+      size: 2531
+    - path: ml/common.py
+      hash: md5
+      md5: a3faa2d3b6bf98ab5d82a661a62c8a30
+      size: 4884
+    outs:
+    - path: data/anon
+      hash: md5
+      md5: 5d0f378890b8b217f519bdf1492b030a.dir
+      size: 919599
+      nfiles: 1
+  clean:
+    cmd: python -m ml.clean
+    deps:
+    - path: data/anon
+      hash: md5
+      md5: 5d0f378890b8b217f519bdf1492b030a.dir
+      size: 919599
+      nfiles: 1
+    - path: ml/clean.py
+      hash: md5
+      md5: e6b1698e74c819279f63c17885937c4b
+      size: 2655
+    - path: ml/common.py
+      hash: md5
+      md5: a3faa2d3b6bf98ab5d82a661a62c8a30
+      size: 4884
+    outs:
+    - path: data/clean
+      hash: md5
+      md5: fd7bea577bf6634e4e0a905e33e05c7b.dir
+      size: 984157
+      nfiles: 1
+  impute:
+    cmd: python -m ml.impute
+    deps:
+    - path: data/clean
+      hash: md5
+      md5: fd7bea577bf6634e4e0a905e33e05c7b.dir
+      size: 984157
+      nfiles: 1
+    - path: ml/common.py
+      hash: md5
+      md5: a3faa2d3b6bf98ab5d82a661a62c8a30
+      size: 4884
+    - path: ml/impute.py
+      hash: md5
+      md5: f7f84e7cf5616a1e49a957d78b0e2740
+      size: 2933
+    outs:
+    - path: data/imputed
+      hash: md5
+      md5: a661a6bfdd662fd49d648e13a824ae48.dir
+      size: 1415331
+      nfiles: 1
+  features:
+    cmd: python -m ml.features
+    deps:
+    - path: backend/domain/atp3.py
+      hash: md5
+      md5: f8b453f8f1522e09560a3d03fdb3ad24
+      size: 2396
+    - path: data/imputed
+      hash: md5
+      md5: a661a6bfdd662fd49d648e13a824ae48.dir
+      size: 1415331
+      nfiles: 1
+    - path: ml/common.py
+      hash: md5
+      md5: a3faa2d3b6bf98ab5d82a661a62c8a30
+      size: 4884
+    - path: ml/contracts.py
+      hash: md5
+      md5: 41bac8363e557f2cd4d30b76164e8a72
+      size: 3252
+    - path: ml/features.py
+      hash: md5
+      md5: 14cf23e6535322e97e9ef0776adcfb3c
+      size: 1884
+    outs:
+    - path: data/featured
+      hash: md5
+      md5: c1cd03cb53c87bf07add143ed530b6ce.dir
+      size: 1571434
+      nfiles: 1

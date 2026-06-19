@@ -1,9 +1,15 @@
+# Pipeline reproducible MetSyn — Sprint 1 (ETL Excel → features).
+# `dvc repro` regenera data/featured/* desde el crudo versionado por DVC.
+# La etapa `train` se añade en Sprint 5 (ver bloque comentado al final).
 stages:
   validate:
     cmd: python -m ml.validate
     deps:
       - data/raw
       - ml/validate.py
+      - ml/expectations.py
+      - ml/clean.py
+      - ml/common.py
     outs:
       - validations
 
@@ -12,6 +18,7 @@ stages:
     deps:
       - data/raw
       - ml/anonymize.py
+      - ml/common.py
     outs:
       - data/anon
 
@@ -20,6 +27,7 @@ stages:
     deps:
       - data/anon
       - ml/clean.py
+      - ml/common.py
     outs:
       - data/clean
 
@@ -28,6 +36,7 @@ stages:
     deps:
       - data/clean
       - ml/impute.py
+      - ml/common.py
     outs:
       - data/imputed
 
@@ -36,19 +45,22 @@ stages:
     deps:
       - data/imputed
       - ml/features.py
+      - ml/contracts.py
+      - ml/common.py
       - backend/domain/atp3.py
     outs:
       - data/featured
 
-  train:
-    cmd: python -m ml.train
-    deps:
-      - data/featured
-      - ml/train.py
-    outs:
-      - models/metsyn_model.pkl
-    metrics:
-      - metrics/eval.json
-    plots:
-      - plots/roc.json
-      - plots/shap_summary.json
+# --- Sprint 5 (se activará al implementar ml/train.py) ------------------------
+#  train:
+#    cmd: python -m ml.train
+#    deps:
+#      - data/featured
+#      - ml/train.py
+#    outs:
+#      - models/metsyn_model.pkl
+#    metrics:
+#      - metrics/eval.json
+#    plots:
+#      - plots/roc.json
+#      - plots/shap_summary.json
