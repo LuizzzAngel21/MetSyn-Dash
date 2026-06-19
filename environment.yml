@@ -9,6 +9,7 @@ dependencies:
   - great-expectations
   - pandera
   - pydantic>=2.0
+  - pydantic-settings   # carga/validación de credenciales desde .env (backend/config.py)
   - scikit-learn   # imputación KNN (etapa impute del ETL)
   - fastapi>=0.110
   - uvicorn

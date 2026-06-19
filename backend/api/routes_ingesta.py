@@ -46,6 +46,7 @@ async def upload_excel(file: UploadFile = File(...)):
 
     try:
         resumen: list[dict] = []
+        featured_por_periodo: dict[str, pd.DataFrame] = {}
         total = 0
         for periodo in xls.sheet_names:
             crudo = ingesta.leer_excel(xls, periodo)
@@ -59,6 +60,7 @@ async def upload_excel(file: UploadFile = File(...)):
             limpio = limpiar_df(crudo)
             imputado, _meta = imputador.imputar(limpio)
             featured = calcular_flags(imputado)
+            featured_por_periodo[periodo] = featured
 
             n = len(featured)
             total += n
@@ -71,10 +73,13 @@ async def upload_excel(file: UploadFile = File(...)):
                 }
             )
 
-        # Persistencia: Sprint 2. Si el repositorio aún no existe, se informa.
+        # Persistencia (Sprint 2): upsert real en Supabase por período.
         try:
             repo = get_repositorio()
-            persistidos = sum(repo.upsert_registros(pd.DataFrame(), p["period"]) for p in resumen)
+            persistidos = sum(
+                repo.upsert_registros(featured_por_periodo[p["period"]], p["period"])
+                for p in resumen
+            )
             persistencia = {"estado": "ok", "filas_insertadas": persistidos}
         except NotImplementedError:
             persistencia = {"estado": "pendiente", "sprint": 2}
