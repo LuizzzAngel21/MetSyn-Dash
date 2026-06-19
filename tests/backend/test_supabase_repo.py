@@ -110,3 +110,70 @@ def test_obtener_registros_pagina_y_filtra():
     assert len(res["items"]) == 2
     builder.order.assert_called_with("patient_id")
     builder.range.assert_called_with(0, 49)
+
+
+def test_obtener_tendencias_serie_por_periodo():
+    client = MagicMock()
+    builder = client.table.return_value.select.return_value
+    builder.eq.return_value = builder
+    # 4 períodos x 2 conteos (total, positivos) = 8 llamadas a execute.
+    builder.execute.side_effect = [
+        SimpleNamespace(count=10, data=[]), SimpleNamespace(count=3, data=[]),
+        SimpleNamespace(count=10, data=[]), SimpleNamespace(count=3, data=[]),
+        SimpleNamespace(count=10, data=[]), SimpleNamespace(count=3, data=[]),
+        SimpleNamespace(count=10, data=[]), SimpleNamespace(count=3, data=[]),
+    ]
+
+    repo = SupabaseRepositorioAdapter(client=client)
+    res = repo.obtener_tendencias()
+
+    assert len(res["serie"]) == 4
+    assert res["serie"][0]["period"] == "2021"
+    assert res["serie"][0]["prevalencia_pct"] == 30.0
+
+
+def test_obtener_criterios_conteo_y_pct():
+    client = MagicMock()
+    builder = client.table.return_value.select.return_value
+    builder.eq.return_value = builder
+    # total + 5 criterios (perabd, trig, hdl, presion, glu).
+    builder.execute.side_effect = [
+        SimpleNamespace(count=20, data=[]),  # total
+        SimpleNamespace(count=10, data=[]),  # perabd
+        SimpleNamespace(count=5, data=[]),   # trig
+        SimpleNamespace(count=4, data=[]),   # hdl
+        SimpleNamespace(count=3, data=[]),   # presion
+        SimpleNamespace(count=2, data=[]),   # glu
+    ]
+
+    repo = SupabaseRepositorioAdapter(client=client)
+    res = repo.obtener_criterios(periodo="2021")
+
+    assert res["total"] == 20
+    assert res["conteo"]["perabd"] == 10
+    assert res["pct"]["perabd"] == 50.0
+
+
+def test_obtener_missingness_usa_imputed_flags():
+    client = MagicMock()
+    builder = client.table.return_value.select.return_value
+    builder.eq.return_value = builder
+    builder.contains.return_value = builder
+    # total + 6 criterios imputables.
+    builder.execute.side_effect = [
+        SimpleNamespace(count=50, data=[]),  # total
+        SimpleNamespace(count=5, data=[]),   # perabd
+        SimpleNamespace(count=4, data=[]),   # trig
+        SimpleNamespace(count=3, data=[]),   # hdl
+        SimpleNamespace(count=2, data=[]),   # glu
+        SimpleNamespace(count=1, data=[]),   # presion_sis
+        SimpleNamespace(count=0, data=[]),   # presion_dia
+    ]
+
+    repo = SupabaseRepositorioAdapter(client=client)
+    res = repo.obtener_missingness()
+
+    assert res["total"] == 50
+    assert res["imputados"]["perabd"] == 5
+    assert res["pct"]["perabd"] == 10.0
+    builder.contains.assert_any_call("imputed_flags", '["perabd"]')
