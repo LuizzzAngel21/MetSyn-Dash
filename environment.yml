@@ -1,0 +1,21 @@
+name: metsyn-backend
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pandas>=2.0
+  - openpyxl
+  - great-expectations
+  - pandera
+  - pydantic>=2.0
+  - fastapi>=0.110
+  - uvicorn
+  - python-dotenv
+  - dvc
+  - pytest
+  - ruff
+  - pip
+  - pip:
+      - supabase
+      - redis

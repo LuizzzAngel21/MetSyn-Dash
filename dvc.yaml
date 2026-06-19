@@ -1,0 +1,54 @@
+stages:
+  validate:
+    cmd: python -m ml.validate
+    deps:
+      - data/raw
+      - ml/validate.py
+    outs:
+      - validations
+
+  anonymize:
+    cmd: python -m ml.anonymize
+    deps:
+      - data/raw
+      - ml/anonymize.py
+    outs:
+      - data/anon
+
+  clean:
+    cmd: python -m ml.clean
+    deps:
+      - data/anon
+      - ml/clean.py
+    outs:
+      - data/clean
+
+  impute:
+    cmd: python -m ml.impute
+    deps:
+      - data/clean
+      - ml/impute.py
+    outs:
+      - data/imputed
+
+  features:
+    cmd: python -m ml.features
+    deps:
+      - data/imputed
+      - ml/features.py
+      - backend/domain/atp3.py
+    outs:
+      - data/featured
+
+  train:
+    cmd: python -m ml.train
+    deps:
+      - data/featured
+      - ml/train.py
+    outs:
+      - models/metsyn_model.pkl
+    metrics:
+      - metrics/eval.json
+    plots:
+      - plots/roc.json
+      - plots/shap_summary.json

@@ -1,0 +1,3 @@
+# Ignorar archivos de Python en el tracking de DVC
+**/__pycache__
+**/*.pyc
