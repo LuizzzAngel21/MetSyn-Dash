@@ -29,7 +29,14 @@ def _excel(columnas, periodo="2021") -> bytes:
     return buf.getvalue()
 
 
-def test_upload_excel_valido_calcula_metsyn():
+def test_upload_excel_valido_calcula_metsyn(monkeypatch):
+    # Mock del repositorio: no se toca Supabase en los tests.
+    class _FakeRepo:
+        def upsert_registros(self, df, periodo):
+            return len(df)
+
+    monkeypatch.setattr("api.routes_ingesta.get_repositorio", lambda: _FakeRepo())
+
     data = _excel(COLUMNAS)
     resp = client.post(
         "/api/ingesta/upload",
@@ -41,8 +48,9 @@ def test_upload_excel_valido_calcula_metsyn():
     assert body["status"] == "ok"
     assert body["total_registros"] == 2
     assert body["por_periodo"][0]["period"] == "2021"
-    # Persistencia diferida a Sprint 2.
-    assert body["persistencia"]["estado"] == "pendiente"
+    # Persistencia real (Sprint 2): el repo mockeado confirma 2 filas upserteadas.
+    assert body["persistencia"]["estado"] == "ok"
+    assert body["persistencia"]["filas_insertadas"] == 2
 
 
 def test_upload_excel_invalido_se_rechaza_con_html():

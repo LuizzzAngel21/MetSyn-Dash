@@ -7,6 +7,7 @@ from functools import lru_cache
 from adapters.excel_pandas import ExcelPandasAdapter
 from adapters.ge_validator import GEValidatorAdapter
 from adapters.imputer_knn import KNNImputerAdapter
+from adapters.supabase_repo import SupabaseRepositorioAdapter
 
 
 @lru_cache
@@ -27,7 +28,9 @@ def get_imputacion():
 
 @lru_cache
 def get_repositorio():
-    raise NotImplementedError("Implementar en Sprint 2 (Supabase + RLS)")
+    # Adaptador de RepositorioPort sobre Supabase/PostgreSQL (Sprint 2).
+    # El cliente se resuelve perezosamente (no requiere credenciales al cablear).
+    return SupabaseRepositorioAdapter()
 
 
 @lru_cache
