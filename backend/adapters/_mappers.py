@@ -50,6 +50,11 @@ def featured_to_records(df: pd.DataFrame) -> list[dict]:
             presion_dia=_num(row.get("presion_dia")),
             criterios_n=int(row["criterios_n"]),
             metsyn_flag=bool(row["metsyn_flag"]),
+            criterio_perabd=bool(row.get("criterio_perabd", False)),
+            criterio_trig=bool(row.get("criterio_trig", False)),
+            criterio_hdl=bool(row.get("criterio_hdl", False)),
+            criterio_presion=bool(row.get("criterio_presion", False)),
+            criterio_glu=bool(row.get("criterio_glu", False)),
             imputed_flags=row.get("imputed_flags", []),
         )
         registros.append(rec.model_dump())

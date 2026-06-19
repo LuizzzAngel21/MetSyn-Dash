@@ -66,6 +66,11 @@ class ClinicalRecord(BaseModel):
     presion_dia: float | None = None
     criterios_n: int = Field(ge=0, le=5)
     metsyn_flag: bool
+    criterio_perabd: bool = False
+    criterio_trig: bool = False
+    criterio_hdl: bool = False
+    criterio_presion: bool = False
+    criterio_glu: bool = False
     imputed_flags: list[str] = Field(default_factory=list)
 
     @field_validator("period")
