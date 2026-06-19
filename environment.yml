@@ -9,10 +9,12 @@ dependencies:
   - great-expectations
   - pandera
   - pydantic>=2.0
+  - scikit-learn   # imputación KNN (etapa impute del ETL)
   - fastapi>=0.110
   - uvicorn
   - python-dotenv
   - dvc
+  - dvc-gdrive   # remoto de DVC en Google Drive (dvc push/pull del equipo)
   - pytest
   - ruff
   - pip
