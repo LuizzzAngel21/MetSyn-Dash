@@ -1,0 +1,4 @@
+[core]
+    remote = gdrive_metsyn
+['remote "gdrive_metsyn"']
+    url = gdrive://1nuoNGIlIRLlBBQGGHCq1acqcC3F8U2D_
