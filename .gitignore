@@ -1,5 +1,5 @@
 # ── Datos (gestionados por DVC) ──
-data/
+#data/
 models/*.pkl
 metrics/
 plots/
